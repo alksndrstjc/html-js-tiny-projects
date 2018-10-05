@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Calculator</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <script>
+            //promenljiva u kojoj cuvam formulu
+            var formula = "";
+            
+            // funkcija za formiranje formule, ona se poziva pritiskom na dugme
+            function buildFormula(input) {
+                // ako je unos simbol '<' onda obrisi poslednji dostupan karakter u stringu,
+                // .slice radi upravo to
+                if(input === '<') 
+                    formula = formula.slice(0, -1);
+                 else
+                //bilo koji drugi unos ce samo da se dodaje na formulu 
+                formula += input;
+            
+                // setuj vrednost trenutne formule kao sadrzaj tekstualnog polja
+                document.getElementById("textField").value = formula;
+            }
+      
+            function deleteFormula() {
+                formula = "";
+                document.getElementById("textField").value = "";
+            }
+            
+          
+            function calculate() {
+                // 'eval' uzima string i ukoliko string predstavlja formulaicni izraz racuna tu formulu
+                let calc = eval(formula);
+                // ovo je ona provera da l je promenljiva incijalizovana, izbacice poruku da nije samo kad je polje gde se gradi formula prazno
+                if(typeof calc !== "undefined") 
+                    alert("The result is: " + calc);
+                else 
+                    alert("The result is undefined. Try again with a well-defined formula!")
+            }
+        </script>
+    </head>
+    <body>
+        <div>
+            <table>
+                <tr>
+                    <td><button onclick="buildFormula('1')">1</button></td>
+                    <td><button onclick="buildFormula('2')">2</button></td>
+                    <td><button onclick="buildFormula('3')">3</button></td>
+                </tr>
+                <tr>
+                    <td><button onclick="buildFormula('4')">4</button></td>
+                    <td><button onclick="buildFormula('5')">5</button></td>
+                    <td><button onclick="buildFormula('6')">6</button></td>
+                </tr>
+                <tr>
+                    <td><button onclick="buildFormula('7')">7</button></td>
+                    <td><button onclick="buildFormula('8')">8</button></td>
+                    <td><button onclick="buildFormula('9')">9</button></td>
+                </tr>
+                <tr>
+                    <td><button onclick="buildFormula('.')">.</button></td>
+                    <td><button onclick="buildFormula('0')">0</button></td>
+                    <td><button onclick="buildFormula('<')"><</button></td>
+                </tr>
+                <tr>
+                    <td><button onclick="buildFormula('+')">+</button></td>
+                    <td><button onclick="buildFormula('-')">-</button></td>
+                    <td><button onclick="buildFormula('*')">*</button></td>
+                    <td><button onclick="buildFormula('/')">/</button></td>
+                    <td><button onclick="buildFormula('(')">(</button></td>
+                    <td><button onclick="buildFormula(')')">)</button></td>
+                </tr>
+            </table>
+            <label for="textField">Enter your formula</label>
+            <input id="textField" type="text" placeholder="Build your formula" readonly><br>
+            <button onclick="calculate()">calculate</button><br><br>
+            <button onclick="deleteFormula()">delete formula</button>
+        </div>
+    </body>
+</html>

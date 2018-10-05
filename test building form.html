@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>App</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		
+        <script>
+		
+			// nizovi za 'question' i 'option' objekte
+            let questions = [];
+            let options = [];
+            var selectedQuestionIndex;
+			
+			// funkcija za unos novog pitanja
+            function enterQuestion() {
+                let questionText = document.getElementById("question").value;
+                let answerText = document.getElementById("answer").value;
+                let wrongOne = document.getElementById("wrongOne").value;
+                let wrongTwo = document.getElementById("wrongTwo").value;
+                let wrongThree = document.getElementById("wrongThree").value;
+                let wrongFour = document.getElementById("wrongFour").value;
+				
+				// sva polja moraju da budu popunjena pre nego da se primeni bilo kakva logika
+                if (questionText !== "") {
+                    if (answerText !== "") {
+                        if (wrongOne !== "") {
+                            if (wrongTwo !== "") {
+                                if (wrongThree !== "") {
+                                    if (wrongFour !== "") {
+										
+										// 'question' objekat
+										// u njemu su informacije o pitanju i tacnom odgovoru
+                                        let question = {
+                                            question: questionText,
+                                            answer: answerText,
+                                        };
+										
+										// 'option' objekat
+										// o njemu su informacije o svim ponudjenim odgovorima
+                                        let option = {
+                                            answer: answerText,
+                                            wrongOne: wrongOne,
+                                            wrongTwo: wrongTwo,
+                                            wrongThree: wrongThree,
+                                            wrongFour: wrongFour
+                                        };
+										// guram objekte u odgovarajuci niz
+                                        questions.push(question);
+                                        options.push(option);
+                                    } else
+                                        alert("Please enter the fourth wrong answer!");
+                                } else
+                                    alert("Please enter the third wrong answer!");
+                            } else
+                                alert("Please enter the second wrong answer!");
+                        } else
+                            alert("Please enter the first wrong answer!");
+                    } else
+                        alert("Please enter answer!");
+                } else
+                    alert("Please enter question!");
+            }
+			
+			// funkcija za modifikovanje vec postojeceg pitanja
+            function modifyQuestion() {
+                questions[selectedQuestionIndex].question = document.getElementById("question").value;
+                questions[selectedQuestionIndex].answer = document.getElementById("answer").value;
+                options[selectedQuestionIndex].answer = document.getElementById("answer").value;
+                options[selectedQuestionIndex].wrongOne = document.getElementById("wrongOne").value;
+                options[selectedQuestionIndex].wrongTwo = document.getElementById("wrongTwo").value;
+                options[selectedQuestionIndex].wrongThree = document.getElementById("wrongThree").value;
+                options[selectedQuestionIndex].wrongFour = document.getElementById("wrongFour").value;
+            }
+
+			// funkcija za odabir postojeceg pitanja
+            function selectQuestion(index) {
+                selectedQuestionIndex = index;
+                document.getElementById("question").value = questions[index].question;
+                document.getElementById("answer").value = options[index].answer;
+                document.getElementById("wrongOne").value = options[index].wrongOne;
+                document.getElementById("wrongTwo").value = options[index].wrongTwo;
+                document.getElementById("wrongThree").value = options[index].wrongThree;
+                document.getElementById("wrongFour").value = options[index].wrongFour;
+
+            }
+			
+			// funkcija za dobijanje random broja od 0-max, koristim je kasnije za randomizovanje polozaja radio dugmadi
+            function getRandomInt(max) {
+                return Math.floor(Math.random() * Math.floor(max));
+            }
+			
+			// randomizujem tako sto izvucem niz brojeva koji predstavljaju polozaj, zatim protrcim kroz niz i formiram odgovorajuci html
+			
+            function randomizeRadioButtons(question, answerRand, wrongOneRand, wrongTwoRand, wrongThreeRand, wrongFourRand) {
+                let randomNums = [];
+                let num = getRandomInt(5);
+                randomNums.push(num);
+
+                let isOk;
+                num = getRandomInt(5);
+				//formiram niz polozaja
+                while (randomNums.length !== 5) {
+                    isOk = true;
+					// provera da l se novi random broj vec nalazi u nizu
+                    for (let i = 0; i < randomNums.length; i++) {
+                        if (num === randomNums[i]) {
+                            isOk = false;
+                            num = getRandomInt(5);
+                            break;
+                        }
+                    }
+					// ako novi random broj nije u nizu, smesti ga
+                    if (isOk) {
+                        randomNums.push(num);
+                    }
+                }
+				
+				//formiram html
+                let HTML = "";
+				// protrci kroz niz i prema tome koji brojevi zauzimaju koje pozicije u nizu dodaj u 'HTML' odgovarajuci string 
+                for (let i = 0; i < randomNums.length; i++) {
+                    if (randomNums[i] === 0) {
+                        HTML += "<input type='radio' name=" + question + " value=" + answerRand + ">" + answerRand;
+                    } else if (randomNums[i] === 1) {
+                        HTML += "<input type='radio' name=" + question + " value=" + wrongOneRand + ">" + wrongOneRand;
+                    } else if (randomNums[i] === 2) {
+                        HTML += "<input type='radio' name=" + question + " value=" + wrongTwoRand + ">" + wrongTwoRand;
+                    } else if (randomNums[i] === 3) {
+                        HTML += "<input type='radio' name=" + question + " value=" + wrongThreeRand + ">" + wrongThreeRand;
+                    } else if (randomNums[i] === 4) {
+                        HTML += "<input type='radio' name=" + question + " value=" + wrongFourRand + ">" + wrongFourRand;
+                    }
+                }
+                
+                return HTML;
+            }
+
+			// funkcija za prikazivanje
+            function displayQuestion() {
+				// ako niz nije prazan protrci kroz niz i primenjuj logiku za prikazivanje
+                if (questions.length > 0) {
+                    let html = "";
+                    for (let i = 0; i < questions.length; i++) {
+                        let question = questions[i].question;
+                        let answerRand = options[i].answer;
+                        let wrongOneRand = options[i].wrongOne;
+                        let wrongTwoRand = options[i].wrongTwo;
+                        let wrongThreeRand = options[i].wrongThree;
+                        let wrongFourRand = options[i].wrongFour;
+
+                        html += "<a id=" + i + " href='#' onclick='selectQuestion(" + i + ")'>" + (i + 1) + ". " + question + "</a><img src='minus.jpg' width='20px' height='20px' onclick='deleteQuestion(" + i + ")'><br>";
+                        html += "<form>";
+                        html += randomizeRadioButtons(question, answerRand, wrongOneRand, wrongTwoRand, wrongThreeRand, wrongFourRand);
+                        html += "</form>";
+                    }
+					// setuj div 'test' sa dobijenim html-om
+                    document.getElementById("test").innerHTML = html;
+                } else {
+				// ako je niz prazan setuj div 'test' na njegov inicijalni izgled
+                    document.getElementById("test").innerHTML = staticHTMLTest;
+                }
+            }
+			
+			// funkcija koja se primenjuje pritiskom na dugme 'apply'
+            function apply() {
+				// flow control 
+                selectedQuestionIndex >= 0 ? modifyQuestion() : enterQuestion();
+				// resetuj div 'input' na njegov inicijalni izgled
+                document.getElementById("input").innerHTML = staticHTMLInput;
+                displayQuestion();
+                selectedQuestionIndex = -1;
+            }
+
+            function validateAnswers() {
+				// brojac promenljiva, broji tacne odgovore
+                let count = 0;
+				// 'choices' - niz u koji smestam moguce odgovore dobijene iz grupe radio dugmadi
+                let choices;
+				// protrcim kroz niz pitanja
+                for (let i = 0; i < questions.length; i++) {
+					// zamisao mi je da izvucem niz izbora i da proverim da li se odabrani slaze sa odgovorom na pitanje
+					// radio dugmadi su grupisane po pitanju "name='question'"
+                    choices = document.getElementsByName(questions[i].question);
+                    for (let j = 0; j < choices.length; j++) {
+						// ako je izbor cekiran i ako je vrednost jednaka odgovur na pitanje increment count
+                        if (choices[j].checked && choices[j].value === questions[i].answer) {
+                            count++;
+                            break;
+                        }
+                    }
+                }
+                alert("Correct answers: " + count + "/" + questions.length);
+            }
+			
+            function deleteQuestion(index) {
+                selectedQuestionIndex = -1;
+                questions.splice(index, 1);
+                options.splice(index, 1);
+                displayQuestion();
+            }
+			
+			
+			// mislio sam prvo da highlight-ujem trazeno pitanje al to bi znacilo da moram da parsujem tekst na samoj stranici, nisam siguran kako to da izvedem
+			// pa sam napravio link na koji kada se klikne baca na trazeno pitanje na samoj stranici
+            function find() {
+				// vadi 'parametar'; string na osnovu kog se obavlja trazenje
+                let findParameter = document.getElementById("findField").value;
+                let areMatches = false;
+                if (findParameter !== "") {
+					// protrcim kroz pitanja
+                    for (let i = 0; i < questions.length; i++) {
+						// ako je parametar isti kao pitanje ili svi ponudjeni odgovori za pitanje
+                        if (findParameter === questions[i].question ||
+                                findParameter === options[i].answer ||
+                                findParameter === options[i].wrongOne ||
+                                findParameter === options[i].wrongTwo ||
+                                findParameter === options[i].wrongThree ||
+                                findParameter === options[i].wrongFour) {
+								// pronadjen je 
+                            areMatches = true;
+							// setuj atribut linka tako da referencira na id pitanja 
+                            document.getElementById("find").setAttribute("href=#" + i);
+                        }
+                    }
+					// poruka ukoliko nema trazenog
+                    if (!areMatches) {
+                        alert("There are no matches!");
+                    }
+                } else
+                    alert("Please enter the find parameter!");
+            }
+        </script>
+    </head>
+    <body>
+        <div class="mhm" id="input">
+            <label for="question">Enter your question:</label><br>
+            <input type="text" id="question" placeholder="Enter your question here"><br><br>
+            <input type="text" id="answer" placeholder="Enter the answer here"><br>
+            <input type="text" id="wrongOne" placeholder="Enter first wrong question here"><br>
+            <input type="text" id="wrongTwo" placeholder="Enter second wrong question here"><br>
+            <input type="text" id="wrongThree" placeholder="Enter third wrong question here"><br>
+            <input type="text" id="wrongFour" placeholder="Enter fourth wrong question here"><br><br>
+            <input type="submit" value="apply" onclick="apply()"><br>
+        </div>
+        <div id="test">
+
+        </div>
+        <button onclick="validateAnswers()">Validate answers</button>
+        <div>
+            <label for="findField">Enter the question or optional answer to find the question</label>
+            <input id="findField" type="text" placeholder="Type out the parameter here"><br>
+            <a id="find" href="#">Find the question</a><br>
+        </div>
+        <script> var staticHTMLInput = document.getElementById("input").innerHTML;
+            var staticHTMLTest = document.getElementById("test").innerHTML;
+        </script>
+    </body>
+</html>

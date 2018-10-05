@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>App</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <script>
+            // receno je da se radi sa objektima tako da evo ih
+            var eur = {
+                name: "EUR",
+                // uzimamo evro kao 'apsolutnu' valutu, tj. konverziju svih valuta vrsimo preko evra
+                rateToEUR: 1.00
+            };
+
+            var usd = {
+                name: "USD",
+                rateToEUR: 1.19
+            };
+
+            var chf = {
+                name: "CHF",
+                rateToEUR: 1.20
+            };
+
+            var gbp = {
+                name: "GBP",
+                rateToEUR: 0.88
+            };
+            
+            // pravim niz svih ovih valuta
+            currencies = [];
+            currencies.push(eur);
+            currencies.push(usd);
+            currencies.push(chf);
+            currencies.push(gbp);
+            
+            // promenljive za prvu (IZ) i drugu (U) valutu
+            var currencyOne;
+            var currencyTwo;
+            
+            // funkcije za setovanje ovih dvaju promenljivih, poziva se svaki put kada se u drop-down meniju izvrsi promena
+            function setCurrencyOne(s) {
+                for (let i = 0; i < currencies.length; i++) {
+                    if (s.value === currencies[i].name) {
+                        currencyOne = currencies[i];
+                        break;
+                    }
+                }
+            }
+
+            function setCurrencyTwo(s) {
+                for (let i = 0; i < currencies.length; i++) {
+                    if (s.value === currencies[i].name) {
+                        currencyTwo = currencies[i];
+                        break;
+                    }
+                }
+            }
+            
+            // funkcija za konvertovanje
+            function convert() {
+                // suma koju hocemo da konvertujemo
+                let amount = document.getElementById("amount").value;
+                // mora da bude veca od nule
+                if (amount > 0) {
+                    // odnos valute iz koje zelimo da konvertujemo prema evru
+                    let sourceToEUR = currencyOne.rateToEUR;
+                    // odnos valute u koju zelimo da konvertujemo prema evru
+                    let targetToEUR = currencyTwo.rateToEUR;
+                    
+                    // rezultat konverzije
+                    let result = (amount / sourceToEUR) * targetToEUR;
+                    
+                    // setovanje rezultata 
+                    document.getElementById("result").value = result;
+                } else
+                    alert("Please enter some amount you wish to convert!");
+            }
+
+        </script>
+    </head>
+    <body>
+        <div>
+            <label for="amount">How much?</label><br>
+            <input id="amount" type="number" placeholder="Enter your amount here"><br><br>
+            <label>FROM</label><br>
+            <select name="currency-one" onchange="setCurrencyOne(this)">
+                <option> Make a choice</option>
+                <option value="EUR">EUR</option>
+                <option value="USD">USD</option>  
+                <option value="CHF">CHF</option>
+                <option value="GBP">GBP</option>
+            </select><br>
+            <label>IN</label><br>
+            <select name="currency-two" onchange="setCurrencyTwo(this)">
+                <option> Make a choice</option>
+                <option value="EUR">EUR</option>
+                <option value="USD">USD</option>  
+                <option value="CHF">CHF</option>
+                <option value="GBP">GBP</option>
+            </select><br><br>
+            <input type="submit" value="convert" onclick="convert()"><br><br>
+            <label for="result">RESULT</label>
+            <input type="text" id="result" readonly>
+        </div>
+    </body>
+</html>
